@@ -16,7 +16,7 @@
  */
  #include "../include/Client.h"
  /**
- * Fonction to connect the socket with hostname and port
+ * Function to connect the socket with hostname and port
  * Param: Socket descriptor
  * Param: Hostname
  * Param: Port number
@@ -42,7 +42,7 @@ void connect_to_host(SOCKET sock, char* hostname, int PORT) {
 }
 
 /**
-* Fonction to send data via a socket
+* Function to send data via a socket
 * Param: Socket descriptor
 * Param: pointer to data
 * Param: size of data
@@ -56,7 +56,7 @@ void send_data(SOCKET sock, int16_t* data,int size) {
 }
 
 /**
-* Fonction to receive data via a socket
+* Function to receive data via a socket
 * Param: Socket descriptor
 * Param: pointer to data
 * Param: size of data

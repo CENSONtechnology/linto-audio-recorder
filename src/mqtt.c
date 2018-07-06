@@ -1,4 +1,4 @@
-/**
+Function/**
  * Copyright (C) 2018 Linagora
  *
  * This program is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@ char* sub_topic_bis;
 
 
  /**
- * Fonction called back when a message is delivered
+ * Function called back when a message is delivered
  * Param: context
  * Param: delivery token
  */
@@ -46,7 +46,7 @@ char* sub_topic_bis;
 
 
  /**
- * Fonction called back when a message arrives
+ * Function called back when a message arrives
  * Param: context
  * Param: Related topic name
  * Param: topic length
@@ -95,6 +95,11 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
      MQTTClient_free(topicName);
      return 1;
 }
+/**
+* Function called back when connexion is lost
+* Param: context
+* Param: cause
+*/
 void connlost(void *context, char *cause)
 {
    printf("\nConnection lost ");
@@ -102,9 +107,8 @@ void connlost(void *context, char *cause)
 }
 
 /**
-* Fonction tp subscribe to a topic on MQTT
+* Function to subscribe to topics on MQTT
 * Param: pointer to an MQTT client
-* Param: Related topic name
 */
 int subscribe(MQTTClient* client) {
    MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;

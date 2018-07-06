@@ -119,10 +119,7 @@ int Audio_Output(pa_simple *s, size_t size, int16_t* buff) {
 
 
 /**
-* Test the Pulse Audio sound server by playing the microphone input
-* Param: Format in bits (8 or 16)
-* Param: Rate in Hz
-* Param: Number of channels (1 to 4)
+* Record the Pulse Audio sound server using the microphone input
 */
 int record() {
   int16_t* buff=malloc(sizeof(int16_t)*BUFSIZE);
@@ -138,11 +135,10 @@ int record() {
       }
       pthread_mutex_lock(&mutex);
       indexW = add(indexW,buff,BUFSIZE);
-      if (e == Wakeword && f != NULL) {
-        fwrite(buff,sizeof(int16_t),BUFSIZE,f);
+      if (e == Wakeword && f != NULL) { // After receiving MQTT start message,
+        fwrite(buff,sizeof(int16_t),BUFSIZE,f); // Writing data to file or pipe
       }
       pthread_mutex_unlock(&mutex);
-      //Audio_Output(s_playback,BUFSIZE*sizeof(int16_t),buff);
     }
   free(buff);
 }
