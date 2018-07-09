@@ -16,21 +16,23 @@
  */
 #include "../include/Audio.h"
 
-extern uint16_t MAX_BUF_SIZE;
-int16_t *circular_buff;
-extern int32_t indexW;
-extern pthread_mutex_t mutex;
-extern pthread_cond_t WUW_cond;
-extern pthread_cond_t VAD_end_cond;
-FILE *f;
-char* channels;
-char* rate;
-extern char* ip;
-extern char* port;
-extern char* sub_topic;
-extern char* sub_keyword_start;
-extern char* sub_keyword_stop;
-extern char* sub_topic_bis;
+
+// Global variables
+extern uint16_t max_buf_size; //maximum buffer size
+int16_t *circular_buff; //pointer to the circular buffer
+extern int32_t writter_index; //index to write in the circular buffer
+extern pthread_mutex_t mutex; //mutex to protect shared data
+extern pthread_cond_t wuw_cond; //condition to unlock record
+extern pthread_cond_t vad_end_cond; //condition to lock record
+FILE *f; //file or pipe to save data
+char* channels; //number of channels
+char* rate; //sampling rate
+extern char* ip; //local broker ip
+extern char* port; //local broker port
+extern char* sub_topic; //name of one of the topic to subscribe
+extern char* sub_keyword_start; //message to start record
+extern char* sub_keyword_stop; //message to stop record
+extern char* sub_topic_bis; //name of the second topic to subscribe
 
 void create_pipe(char* path) {
   mkfifo(path, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
@@ -51,7 +53,7 @@ int main(int argc, char** argv) {
     printf("Sub_Topic_bis: The topic name to receive stop messages\n");
     return 1;
   }
-  circular_buff = malloc(sizeof(int16_t)* MAX_BUF_SIZE);
+  circular_buff = malloc(sizeof(int16_t)* max_buf_size); //Allocating circular buffer
   MQTTClient client;
   channels = argv[3];
   rate = argv[2];
@@ -61,17 +63,15 @@ int main(int argc, char** argv) {
   sub_keyword_start= argv[8];
   sub_keyword_stop= argv[9];
   sub_topic_bis= argv[10];
-  MAX_BUF_SIZE = strtof(argv[4],NULL)*strtol(rate,NULL,10)*strtol(channels,NULL,10);
+  max_buf_size = strtof(argv[4],NULL)*strtol(rate,NULL,10)*strtol(channels,NULL,10);
   subscribe(&client);
   if (argc == 12 && strcmp(argv[11],"pipe") == 0) {
     create_pipe(argv[1]);
   }
-  pthread_t recorder;
+  pthread_t recorder; // Creating thread
   mutex = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER; // Create the mutex to protect shared variables
   pthread_mutex_t wuw_mutex = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
   pthread_mutex_t vad_mutex = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
-  //pthread_mutex_lock(&wuw_mutex);
-  //pthread_mutex_lock(&vad_mutex);
   f = fopen(argv[1],"w+b"); // Open the binary file
   if (f == NULL) {
     printf("Failed to open %s !\n",argv[1]);
@@ -81,24 +81,21 @@ int main(int argc, char** argv) {
     printf("Thread error\n");
     return 1;
   }
-  //fseek(f,0,SEEK_END); // Going to the end of the file
-  //int c = 0;
-  //do c=getchar(); while (c!='\n' && c!=EOF); // Wait until the next event (input)
   for(;;) {
-    pthread_cond_wait(&WUW_cond, &wuw_mutex);
-    f = fopen(argv[1],"w+b"); // Open the binary file
+    pthread_cond_wait(&wuw_cond, &wuw_mutex);
+    f = fopen(argv[1],"w+b"); // Open the binary file to delete last file
     if (f == NULL) {
       printf("Failed to open%s !\n",argv[1]);
       return 1;
     }
     pthread_mutex_lock(&mutex);
-    if (MAX_BUF_SIZE > BUFSIZE) {
-      fwrite(circular_buff+indexW,sizeof(int16_t),MAX_BUF_SIZE-indexW,f); // Write the circular buffer in the pipe
-      fwrite(circular_buff,sizeof(int16_t),indexW,f);
+    if (max_buf_size > BUFSIZE) {
+      fwrite(circular_buff+writter_index,sizeof(int16_t),max_buf_size-writter_index,f); // Write the circular buffer in the pipe
+      fwrite(circular_buff,sizeof(int16_t),writter_index,f);
     }
     pthread_mutex_unlock(&mutex);
     printf("Start record\n");
-    pthread_cond_wait(&VAD_end_cond, &vad_mutex);
+    pthread_cond_wait(&vad_end_cond, &vad_mutex); //Wait for the vader module to send stop message
     printf("End record\n");
     fclose(f);
   }

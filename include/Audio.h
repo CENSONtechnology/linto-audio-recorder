@@ -17,7 +17,7 @@
 
 #include "Circular.h"
 
-int Audio_Init(pa_simple **s, char* type, char* format, char* rate, char* channels);
-int Audio_Input(pa_simple *s, int size, int16_t* buff);
-int Audio_Output(pa_simple *s, size_t size, int16_t* buff);
+int audio_init(pa_simple **s, char* type, char* format, char* rate, char* channels);
+int audio_input(pa_simple *s, int size, int16_t* buff);
+int audio_output(pa_simple *s, size_t size, int16_t* buff);
 int record();

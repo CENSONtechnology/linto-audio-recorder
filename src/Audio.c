@@ -16,14 +16,15 @@
  */
 #include "../include/Audio.h"
 
-extern uint32_t indexW;
-int16_t *circular_buff;
-extern pthread_mutex_t mutex;
-extern FILE *f;
-enum event e = None;
-extern char* channels;
-extern char* rate;
-extern uint16_t MAX_BUF_SIZE;
+/* Global variables */
+extern uint32_t writter_index; //index to write in the circular buffer
+int16_t *circular_buff; //pointer to the circular buffer
+extern pthread_mutex_t mutex; //mutex to protect shared data
+extern FILE *f; //file or pipe to save data
+enum event e = None; //Event switching in state after wake-up-word detection or VAD end
+extern char* channels; //number of channels
+extern char* rate; //sampling rate
+extern uint16_t max_buf_size; //maximum buffer size
 
 /**
 * Returns 0 if the pulse audio stream is correctly connected, -1 in other cases
@@ -33,13 +34,13 @@ extern uint16_t MAX_BUF_SIZE;
 * Param: Rate frequency in Hz
 * Param: Number of channels
 */
-int Audio_Init(pa_simple **s,char* type, char* format, char* rate, char* channels) {
+int audio_init(pa_simple **s,char* type, char* format, char* rate, char* channels) {
   int error;
   char* endptr;
   pa_sample_spec ss;
   if (strcmp(format,"8") == 0 ) {
     ss.format = PA_SAMPLE_U8; // 8 bits
-    ss.rate = strtol(rate,&endptr,10); // rate
+    ss.rate = strtol(rate,&endptr,10);
     ss.channels = strtol(channels,&endptr,10); // 1 = mono, 2 = stereo
   }
   else if (strcmp(format,"16") == 0 ) {
@@ -47,7 +48,7 @@ int Audio_Init(pa_simple **s,char* type, char* format, char* rate, char* channel
     ss.rate = strtol(rate,&endptr,10); // rate
     ss.channels = strtol(channels,&endptr,10); // 1 = mono, 2 = stereo
   }
-  /* Create a new playback stream */
+  /* Create a new stream */
   if (strcmp(type,"record") == 0 ) {
     if (!(*s = pa_simple_new(
       NULL,  // server name or NULL for default
@@ -94,7 +95,7 @@ int Audio_Init(pa_simple **s,char* type, char* format, char* rate, char* channel
 * Param: Size of data to read
 * Param: Pointer to a buffer
 */
-int Audio_Input(pa_simple *s,int size, int16_t* buff) {
+int audio_input(pa_simple *s,int size, int16_t* buff) {
   /* Read some data ... */
   int error = 0;
   if (pa_simple_read(s, buff, size, &error) < 0) {
@@ -109,7 +110,7 @@ int Audio_Input(pa_simple *s,int size, int16_t* buff) {
 * Param: Size of data to write
 * Param: Pointer to a buffer containing the data to be read
 */
-int Audio_Output(pa_simple *s, size_t size, int16_t* buff) {
+int audio_output(pa_simple *s, size_t size, int16_t* buff) {
   int error = 0;
   if (pa_simple_write(s, buff, size, &error) < 0) {
       printf("pa_simple_write() failed: %s\n", pa_strerror(error));
@@ -127,14 +128,14 @@ int record() {
   pa_simple *s_playback = NULL;
   pa_simple *s_record = NULL;
   int i = 0;
-  Audio_Init(&s_playback,"playback","16",rate,channels);
-  Audio_Init(&s_record,"record","16",rate,channels);
+  audio_init(&s_playback,"playback","16",rate,channels);
+  audio_init(&s_record,"record","16",rate,channels);
   for (;;) {
-      if ((error = Audio_Input(s_record,BUFSIZE*sizeof(int16_t),buff)) < 0) {
+      if ((error = audio_input(s_record,BUFSIZE*sizeof(int16_t),buff)) < 0) {
           printf("Input Error : %d !\n",error);
       }
       pthread_mutex_lock(&mutex);
-      indexW = add(indexW,buff,BUFSIZE);
+      writter_index = add(writter_index,buff,BUFSIZE);
       if (e == Wakeword && f != NULL) { // After receiving MQTT start message,
         fwrite(buff,sizeof(int16_t),BUFSIZE,f); // Writing data to file or pipe
       }

@@ -17,12 +17,12 @@
 #include "../include/Circular.h"
 
 int16_t *circular_buff;
-int32_t indexW;
+int32_t writter_index;
 pthread_mutex_t mutex;
 pthread_mutex_t wuw_mutex;
-pthread_cond_t WUW_cond = PTHREAD_COND_INITIALIZER;
-pthread_cond_t VAD_end_cond = PTHREAD_COND_INITIALIZER;
-uint16_t MAX_BUF_SIZE = 16000/2; //default size
+pthread_cond_t wuw_cond = PTHREAD_COND_INITIALIZER;
+pthread_cond_t vad_end_cond = PTHREAD_COND_INITIALIZER;
+uint16_t max_buf_size = 16000/2; //default size
 
 /**
 * Add some data in the global circular buffer.
@@ -32,9 +32,9 @@ uint16_t MAX_BUF_SIZE = 16000/2; //default size
 * Param: Number of elements to write
 */
 uint32_t add(uint32_t index, int16_t* data, int32_t size) {
-  if (MAX_BUF_SIZE > BUFSIZE) { // Useless case if bufsize > max_buf_size
-   if (size + index >= MAX_BUF_SIZE) { //If there is not enough places at the end of the buffer
-     unsigned int free_place = MAX_BUF_SIZE - index; //compute the free place in the buffer
+  if (max_buf_size > BUFSIZE) { // Useless case if bufsize > max_buf_size
+   if (size + index >= max_buf_size) { //If there is not enough places at the end of the buffer
+     unsigned int free_place = max_buf_size - index; //compute the free place in the buffer
      memcpy(circular_buff+index,data,free_place*sizeof(int16_t)); //copy data at the end of the buffer
      memcpy(circular_buff,data+free_place,(size-free_place)*sizeof(int16_t));//copy end of data at the start of the buffer
      return size-free_place; //Return the new writing index

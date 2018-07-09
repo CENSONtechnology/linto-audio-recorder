@@ -1,4 +1,4 @@
-Function/**
+/**
  * Copyright (C) 2018 Linagora
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,15 +14,12 @@ Function/**
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-
-#include "../include/mqtt.h"
 #include "../include/Audio.h"
 #include "../include/jsmn.h"
 extern enum event e;
 extern pthread_mutex_t wuw_mutex;
-extern pthread_cond_t WUW_cond;
-extern pthread_cond_t VAD_end_cond;
+extern pthread_cond_t wuw_cond;
+extern pthread_cond_t vad_end_cond;
 MQTTClient* mqtt_client;
 char* ip;
 char* port;
@@ -83,11 +80,11 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
        printf("Value : %s \n",value);
      }
      if (strcmp(sub_topic,topicName)==0) {
-       pthread_cond_signal(&WUW_cond);
+       pthread_cond_signal(&wuw_cond);
        e = Wakeword;
      }
      else if (strcmp(sub_topic_bis,topicName)==0) {
-       pthread_cond_signal(&VAD_end_cond);
+       pthread_cond_signal(&vad_end_cond);
        e = VAD_end;
      }
      free(value);
