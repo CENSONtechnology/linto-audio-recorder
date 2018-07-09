@@ -36,7 +36,7 @@ def main():
         param = ' ' + file + ' ' + sampling_rate + ' ' + channels + ' ' + circular_buffer_time + ' ' + broker_ip + ' ' + broker_port + ' ' + broker_listening_topic
         param += ' ' + broker_listening_keyword_start + ' ' +broker_listening_keyword_stop + ' ' + broker_listening_topic_bis + ' '
         while 1:
-            output = subprocess.call(shlex.split('/home/pi/audio_recorder/audio_recorder'+param))
+            output = subprocess.call(shlex.split('/home/pi/linto-audio-recorder/audio_recorder'+param))
             logging.info(param)
             if output != 0:
                 logging.info("Audio Recorder failed.")
@@ -47,7 +47,7 @@ def main():
         param += ' ' + broker_listening_keyword_start + ' ' +broker_listening_keyword_stop + ' ' + broker_listening_topic_bis + ' '
         param += ' ' + "pipe"
         while 1:
-            output = subprocess.call(shlex.split('/home/pi/audio_recorder/audio_recorder'+param))
+            output = subprocess.call(shlex.split('/home/pi/linto-audio-recorder/audio_recorder'+param))
             logging.info(param)
             if output != 0:
                 logging.info("Audio Recorder failed.")
