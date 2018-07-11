@@ -66,7 +66,6 @@ int main(int argc, char** argv) {
   sub_keyword_stop= argv[9];
   sub_topic_bis= argv[10];
   max_buf_size = strtof(argv[4],NULL)*strtol(rate,NULL,10)*strtol(channels,NULL,10);
-  meeting_file = argv[11];
   subscribe(&client);
   if (argc == 13 && strcmp(argv[12],"pipe") == 0) {
     create_pipe(argv[1]);
@@ -77,6 +76,11 @@ int main(int argc, char** argv) {
   pthread_mutex_t vad_mutex = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
   f = fopen(argv[1],"w+b"); // Open the binary file
   if (f == NULL) {
+    printf("Failed to open %s !\n",argv[1]);
+    return 1;
+  }
+  meeting_file = fopen(argv[11],"w+b"); // Open the binary file
+  if (meeting_file == NULL) {
     printf("Failed to open %s !\n",argv[1]);
     return 1;
   }
