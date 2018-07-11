@@ -86,7 +86,6 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
        e = VAD_end;
      }
      else if (strcmp("lintoclient/action",topicName)==0)  {
-       printf("Comparaison? %d\n",strncmp("meeting",value,7)==0 );
        if (strncmp("meeting",value,7)==0) {
          e = Meeting;
          printf("Passage en mode réunion\n");
