@@ -30,17 +30,13 @@ char* channels; //number of channels
 char* rate; //sampling rate
 extern char* ip; //local broker ip
 extern char* port; //local broker port
-extern char* sub_topic; //name of one of the topic to subscribe
-extern char* sub_keyword_start; //message to start record
-extern char* sub_keyword_stop; //message to stop record
-extern char* sub_topic_bis; //name of the second topic to subscribe
 
 void create_pipe(char* path) {
   mkfifo(path, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 }
 
 int main(int argc, char** argv) {
-  if (argc<12) {
+  if (argc<8) {
     printf("Usage: PipeFile Rate Channels Circular_Buffer_Time Broker_ip Broker_port Sub_Topic Sub_Keyword_Start Sub_Keyword_Stop Pub_Topic Pub_Keyword\n");
     printf("PipeFile: Name of the named pipe or the file to save data\n");
     printf("Rate: audio sampling rate\n");
@@ -48,10 +44,6 @@ int main(int argc, char** argv) {
     printf("Circular_Buffer_Time: Number of seconds the circular_buff should save data\n");
     printf("Broker_ip: The IP address of the MQTT local broker, use localhost by default\n");
     printf("Broker_port: The port of the MQTT local broker, use 1883 by default\n");
-    printf("Sub_Topic: The topic name to receive messages\n");
-    printf("Sub_Keyword_Start: The message to start recording\n");
-    printf("Sub_Keyword_Stop: The message to spot recording\n");
-    printf("Sub_Topic_bis: The topic name to receive stop messages\n");
     printf("Meeting_File: Name of the file to save data in meeting mode\n");
     return 1;
   }
@@ -61,13 +53,9 @@ int main(int argc, char** argv) {
   rate = argv[2];
   ip = argv[5];
   port = argv[6];
-  sub_topic = argv[7];
-  sub_keyword_start= argv[8];
-  sub_keyword_stop= argv[9];
-  sub_topic_bis= argv[10];
   max_buf_size = strtof(argv[4],NULL)*strtol(rate,NULL,10)*strtol(channels,NULL,10);
   subscribe(&client);
-  if (argc == 13 && strcmp(argv[12],"pipe") == 0) {
+  if (argc == 9 && strcmp(argv[8],"pipe") == 0) {
     create_pipe(argv[1]);
   }
   pthread_t recorder; // Creating thread
@@ -79,7 +67,7 @@ int main(int argc, char** argv) {
     printf("Failed to open %s !\n",argv[1]);
     return 1;
   }
-  meeting_file = fopen(argv[11],"w+b"); // Open the binary file
+  meeting_file = fopen(argv[7],"w+b"); // Open the binary file
   if (meeting_file == NULL) {
     printf("Failed to open %s !\n",argv[1]);
     return 1;

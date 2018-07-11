@@ -23,10 +23,6 @@ extern pthread_cond_t vad_end_cond;
 MQTTClient* mqtt_client;
 char* ip;
 char* port;
-char* sub_topic;
-char* sub_keyword_start;
-char* sub_keyword_stop;
-char* sub_topic_bis;
 
  volatile MQTTClient_deliveryToken deliveredtoken;
 
@@ -79,14 +75,28 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
        strncpy(value,data+tokens[4].start,tokens[4].end-tokens[4].start);
        printf("Value : %s \n",value);
      }
-     if (strcmp(sub_topic,topicName)==0) {
+     if (strcmp("wuw/wuw-spotted",topicName)==0) {
        pthread_cond_signal(&wuw_cond);
+       printf("Début de la commande\n");
        e = Wakeword;
      }
-     else if (strcmp(sub_topic_bis,topicName)==0) {
+     else if (strcmp("utterance/stop",topicName)==0) {
        pthread_cond_signal(&vad_end_cond);
+       printf("Fin de la commande\n");
        e = VAD_end;
      }
+     else if (strcmp("lintoclient/action",topicName)==0)  {
+       printf("Comparaison? %d\n",strncmp("meeting",value,7)==0 );
+       if (strncmp("meeting",value,7)==0) {
+         e = Meeting;
+         printf("Passage en mode réunion\n");
+       }
+       else if (strncmp("stop_meeting",value,12)==0) {
+         e = None;
+         printf("Fin de la réunion\n");
+       }
+     }
+     value[0]='\0';
      free(value);
      MQTTClient_freeMessage(&message);
      MQTTClient_free(topicName);
@@ -124,9 +134,9 @@ int subscribe(MQTTClient* client) {
      sleep(1);
    }
    printf("Connected to broker %s\n",ADDRESS);
-   MQTTClient_subscribe(*client,sub_topic, QOS);
-   MQTTClient_subscribe(*client,sub_topic_bis, QOS);
-   printf("Correctly subscibed to %s and %s\n",sub_topic,sub_topic_bis);
+   MQTTClient_subscribe(*client,"wuw/wuw-spotted", QOS);
+   MQTTClient_subscribe(*client,"utterance/stop", QOS);
+   MQTTClient_subscribe(*client,"lintoclient/action", QOS);
    mqtt_client = client;
    free(ADDRESS);
    return rc;

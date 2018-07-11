@@ -21,10 +21,6 @@ def main():
     channels = config['ENGINE']['channels']
     broker_ip = config['BROKER']['broker_ip']
     broker_port = config['BROKER']['broker_port']
-    broker_listening_topic = config['BROKER']['broker_listening_topic']
-    broker_listening_keyword_start = config['BROKER']['broker_listening_keyword_start']
-    broker_listening_keyword_stop = config['BROKER']['broker_listening_keyword_stop']
-    broker_listening_topic_bis = config['BROKER']['broker_listening_topic_bis']
     pipe = config['FILES']['pipe_name']
     file = config['FILES']['file_name']
     meeting_file = config['FILES']['meeting_file_name']
@@ -34,8 +30,8 @@ def main():
                         help="Mode to save data, file or pipe")
     args = parser.parse_args()
     if args.mode == 'file':
-        param = ' ' + file + ' ' + sampling_rate + ' ' + channels + ' ' + circular_buffer_time + ' ' + broker_ip + ' ' + broker_port + ' ' + broker_listening_topic
-        param += ' ' + broker_listening_keyword_start + ' ' +broker_listening_keyword_stop + ' ' + broker_listening_topic_bis + ' ' + meeting_file
+        param = ' ' + file + ' ' + sampling_rate + ' ' + channels + ' ' + circular_buffer_time + ' ' + broker_ip + ' ' + broker_port + ' '
+        param += meeting_file
         while 1:
             output = subprocess.call(shlex.split('/home/pi/linto-audio-recorder/audio_recorder'+param))
             logging.info(param)
@@ -44,8 +40,7 @@ def main():
                 logging.info("Trying to restart in 5s.")
                 time.sleep(5)
     elif args.mode == 'pipe':
-        param = ' ' + pipe + ' ' + sampling_rate + ' ' + channels + ' ' + circular_buffer_time + ' ' + broker_ip + ' ' + broker_port + ' ' + broker_listening_topic
-        param += ' ' + broker_listening_keyword_start + ' ' +broker_listening_keyword_stop + ' ' + broker_listening_topic_bis + ' '
+        param = ' ' + pipe + ' ' + sampling_rate + ' ' + channels + ' ' + circular_buffer_time + ' ' + broker_ip + ' ' + broker_port
         param += ' ' + meeting_file + " pipe"
         while 1:
             output = subprocess.call(shlex.split('/home/pi/linto-audio-recorder/audio_recorder'+param))
