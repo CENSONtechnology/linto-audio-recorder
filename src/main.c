@@ -25,6 +25,7 @@ extern pthread_mutex_t mutex; //mutex to protect shared data
 extern pthread_cond_t wuw_cond; //condition to unlock record
 extern pthread_cond_t vad_end_cond; //condition to lock record
 FILE *f; //file or pipe to save data
+FILE *meeting_file;
 char* channels; //number of channels
 char* rate; //sampling rate
 extern char* ip; //local broker ip
@@ -39,7 +40,7 @@ void create_pipe(char* path) {
 }
 
 int main(int argc, char** argv) {
-  if (argc<11) {
+  if (argc<12) {
     printf("Usage: PipeFile Rate Channels Circular_Buffer_Time Broker_ip Broker_port Sub_Topic Sub_Keyword_Start Sub_Keyword_Stop Pub_Topic Pub_Keyword\n");
     printf("PipeFile: Name of the named pipe or the file to save data\n");
     printf("Rate: audio sampling rate\n");
@@ -51,6 +52,7 @@ int main(int argc, char** argv) {
     printf("Sub_Keyword_Start: The message to start recording\n");
     printf("Sub_Keyword_Stop: The message to spot recording\n");
     printf("Sub_Topic_bis: The topic name to receive stop messages\n");
+    printf("Meeting_File: Name of the file to save data in meeting mode\n");
     return 1;
   }
   circular_buff = malloc(sizeof(int16_t)* max_buf_size); //Allocating circular buffer
@@ -64,8 +66,9 @@ int main(int argc, char** argv) {
   sub_keyword_stop= argv[9];
   sub_topic_bis= argv[10];
   max_buf_size = strtof(argv[4],NULL)*strtol(rate,NULL,10)*strtol(channels,NULL,10);
+  meeting_file = argv[11];
   subscribe(&client);
-  if (argc == 12 && strcmp(argv[11],"pipe") == 0) {
+  if (argc == 13 && strcmp(argv[12],"pipe") == 0) {
     create_pipe(argv[1]);
   }
   pthread_t recorder; // Creating thread

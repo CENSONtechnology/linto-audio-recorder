@@ -21,6 +21,7 @@ extern uint32_t writter_index; //index to write in the circular buffer
 int16_t *circular_buff; //pointer to the circular buffer
 extern pthread_mutex_t mutex; //mutex to protect shared data
 extern FILE *f; //file or pipe to save data
+extern FILE *meeting_file; //file to save meeting data
 enum event e = None; //Event switching in state after wake-up-word detection or VAD end
 extern char* channels; //number of channels
 extern char* rate; //sampling rate
@@ -138,6 +139,9 @@ int record() {
       writter_index = add(writter_index,buff,BUFSIZE);
       if (e == Wakeword && f != NULL) { // After receiving MQTT start message,
         fwrite(buff,sizeof(int16_t),BUFSIZE,f); // Writing data to file or pipe
+      }
+      if (e == Meeting && f != NULL) {
+        fwrite(buff,sizeof(int16_t),BUFSIZE,meeting_file);
       }
       pthread_mutex_unlock(&mutex);
     }

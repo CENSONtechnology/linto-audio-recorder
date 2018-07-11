@@ -27,6 +27,7 @@ def main():
     broker_listening_topic_bis = config['BROKER']['broker_listening_topic_bis']
     pipe = config['FILES']['pipe_name']
     file = config['FILES']['file_name']
+    meeting_file = config['FILES']['meeting_file_name']
     parser = argparse.ArgumentParser(
         description='Module to command audio recorder easily')
     parser.add_argument('--mode', dest = 'mode' , default='file',
@@ -34,7 +35,7 @@ def main():
     args = parser.parse_args()
     if args.mode == 'file':
         param = ' ' + file + ' ' + sampling_rate + ' ' + channels + ' ' + circular_buffer_time + ' ' + broker_ip + ' ' + broker_port + ' ' + broker_listening_topic
-        param += ' ' + broker_listening_keyword_start + ' ' +broker_listening_keyword_stop + ' ' + broker_listening_topic_bis + ' '
+        param += ' ' + broker_listening_keyword_start + ' ' +broker_listening_keyword_stop + ' ' + broker_listening_topic_bis + ' ' + meeting_file
         while 1:
             output = subprocess.call(shlex.split('/home/pi/linto-audio-recorder/audio_recorder'+param))
             logging.info(param)
@@ -45,7 +46,7 @@ def main():
     elif args.mode == 'pipe':
         param = ' ' + pipe + ' ' + sampling_rate + ' ' + channels + ' ' + circular_buffer_time + ' ' + broker_ip + ' ' + broker_port + ' ' + broker_listening_topic
         param += ' ' + broker_listening_keyword_start + ' ' +broker_listening_keyword_stop + ' ' + broker_listening_topic_bis + ' '
-        param += ' ' + "pipe"
+        param += ' ' + meeting_file + " pipe"
         while 1:
             output = subprocess.call(shlex.split('/home/pi/linto-audio-recorder/audio_recorder'+param))
             logging.info(param)
