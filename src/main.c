@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
     printf("Failed to open %s !\n",argv[1]);
     return 1;
   }
-  meeting_file = fopen(argv[7],"w+b"); // Open the binary file
+  meeting_file = fopen(argv[7],"a+b"); // Open the binary file
   if (meeting_file == NULL) {
     printf("Failed to open %s !\n",argv[1]);
     return 1;
