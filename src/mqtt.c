@@ -96,6 +96,10 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
        event_command = VAD_end;
      }
      else if (strcmp("lintoclient/action",topicName)==0)  {
+       while (!(json_token_streq(data, &tokens[i], "value"))) {
+         i++;
+       }
+       strncpy(value,data+tokens[i+1].start,tokens[i+1].end-tokens[i+1].start);
        if (strncmp("start_meeting",value,13)==0) {
          event_meeting = Meeting;
          printf("Switching to meeting mode\n");
