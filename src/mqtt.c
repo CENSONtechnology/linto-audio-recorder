@@ -16,7 +16,8 @@
  */
 #include "../include/Audio.h"
 #include "../include/jsmn.h"
-extern enum event e;
+extern enum event event_command;
+extern enum event event_meeting;
 extern pthread_mutex_t wuw_mutex;
 extern pthread_cond_t wuw_cond;
 extern pthread_cond_t vad_end_cond;
@@ -77,22 +78,20 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
      }
      if (strcmp("wuw/wuw-spotted",topicName)==0) {
        pthread_cond_signal(&wuw_cond);
-       printf("Début de la commande\n");
-       e = Wakeword;
+       event_command = Wakeword;
      }
      else if (strcmp("utterance/stop",topicName)==0) {
        pthread_cond_signal(&vad_end_cond);
-       printf("Fin de la commande\n");
-       e = VAD_end;
+       event_command = VAD_end;
      }
      else if (strcmp("lintoclient/action",topicName)==0)  {
        if (strncmp("meeting",value,7)==0) {
-         e = Meeting;
-         printf("Passage en mode réunion\n");
+         event_meeting = Meeting;
+         printf("Switching to meeting mode\n");
        }
        else if (strncmp("stop_meeting",value,12)==0) {
-         e = None;
-         printf("Fin de la réunion\n");
+         event_meeting = Stop_meeting;
+         printf("End of meeting\n");
        }
      }
      value[0]='\0';
@@ -130,6 +129,7 @@ int subscribe(MQTTClient* client) {
    MQTTClient_setCallbacks(*client, NULL, connlost, msgarrvd, delivered);
    while ( (rc = MQTTClient_connect(*client, &conn_opts)) != MQTTCLIENT_SUCCESS )
    {
+     printf("Failed to connect to %s\n",ADDRESS)
      sleep(1);
    }
    printf("Connected to broker %s\n",ADDRESS);

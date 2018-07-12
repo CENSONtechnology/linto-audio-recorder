@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
   }
   meeting_file = fopen(argv[7],"a+b"); // Open the binary file
   if (meeting_file == NULL) {
-    printf("Failed to open %s !\n",argv[1]);
+    printf("Failed to open %s !\n",argv[7]);
     return 1;
   }
   if(pthread_create(&recorder, NULL, &record, (void*) NULL) == -1) { // Create the thread to record data
@@ -89,11 +89,12 @@ int main(int argc, char** argv) {
       fwrite(circular_buff,sizeof(int16_t),writter_index,f);
     }
     pthread_mutex_unlock(&mutex);
-    printf("Start record\n");
+    printf("Start command record\n");
     pthread_cond_wait(&vad_end_cond, &vad_mutex); //Wait for the vader module to send stop message
-    printf("End record\n");
+    printf("End command record\n");
     fclose(f);
   }
+  fclose(meeting_file);
   pthread_join(recorder, NULL); //Wait fot the thread to finish
   free(circular_buff);
   MQTTClient_disconnect(client, 10000);

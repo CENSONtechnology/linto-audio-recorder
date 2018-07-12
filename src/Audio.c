@@ -22,7 +22,8 @@ int16_t *circular_buff; //pointer to the circular buffer
 extern pthread_mutex_t mutex; //mutex to protect shared data
 extern FILE *f; //file or pipe to save data
 extern FILE *meeting_file; //file to save meeting data
-enum event e = None; //Event switching in state after wake-up-word detection or VAD end
+enum event event_command = None; //Event switching in state after wake-up-word detection or VAD end
+enum event event_meeting = None; //Event switching in state after meeting start or meeting stop
 extern char* channels; //number of channels
 extern char* rate; //sampling rate
 extern uint16_t max_buf_size; //maximum buffer size
@@ -137,11 +138,11 @@ int record() {
       }
       pthread_mutex_lock(&mutex);
       writter_index = add(writter_index,buff,BUFSIZE);
-      if (e == Wakeword && f != NULL) { // After receiving MQTT start message,
+      if (event_command == Wakeword && f != NULL) { // After receiving MQTT start message,
         fwrite(buff,sizeof(int16_t),BUFSIZE,f); // Writing data to file or pipe
       }
-      if (e == Meeting && f != NULL) {
-        fwrite(buff,sizeof(int16_t),BUFSIZE,meeting_file);
+      if (event_meeting == Meeting && meeting_file != NULL) {
+        fwrite(buff,sizeof(int16_t),BUFSIZE,meeting_file); // Writing data to specific meeting file
       }
       pthread_mutex_unlock(&mutex);
     }
