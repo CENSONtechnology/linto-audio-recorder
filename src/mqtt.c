@@ -73,7 +73,7 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
        return 1;
      }
      else {
-       strncpy(value,data+tokens[4].start,tokens[4].end-tokens[4].start);
+       strncpy(value,data+tokens[2].start,tokens[2].end-tokens[2].start);
        printf("Value : %s \n",value);
      }
      if (strcmp("wuw/wuw-spotted",topicName)==0) {
