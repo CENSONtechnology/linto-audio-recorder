@@ -18,11 +18,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include "MQTTClient.h"
+#include "../include/jsmn.h"
 
 #define CLIENTID    "AudioRecorderClient"
 #define QOS         1
 #define TIMEOUT     10000L
 
+int json_token_streq(char *js, jsmntok_t *t, char *s);
 void delivered(void *context, MQTTClient_deliveryToken dt);
 int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *message);
 void connlost(void *context, char *cause);
