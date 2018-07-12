@@ -129,7 +129,7 @@ int subscribe(MQTTClient* client) {
    MQTTClient_setCallbacks(*client, NULL, connlost, msgarrvd, delivered);
    while ( (rc = MQTTClient_connect(*client, &conn_opts)) != MQTTCLIENT_SUCCESS )
    {
-     printf("Failed to connect to %s\n",ADDRESS)
+     printf("Failed to connect to %s\n",ADDRESS);
      sleep(1);
    }
    printf("Connected to broker %s\n",ADDRESS);
