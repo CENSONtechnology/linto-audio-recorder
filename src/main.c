@@ -72,7 +72,9 @@ int main(int argc, char** argv) {
   gettimeofday(&tv, NULL);
   char str_time[12];
   sprintf(str_time, "%ld", tv.tv_sec);
+  strcat(meeting_file_name,argv[7]);
   strcat(meeting_file_name,str_time);
+  strcat(meeting_file_name,".raw");
   meeting_file = fopen(meeting_file_name,"a+b"); // Open the binary file
   if (meeting_file == NULL) {
     printf("Failed to open %s !\n",argv[7]);
