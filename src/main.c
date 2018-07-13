@@ -68,6 +68,7 @@ int main(int argc, char** argv) {
     return 1;
   }
   char* meeting_file_name = malloc(sizeof(char)*255);
+  memset(meeting_file_name,'0',255);
   struct timeval tv;
   gettimeofday(&tv, NULL);
   char str_time[12];
