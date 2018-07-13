@@ -105,7 +105,7 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
          gettimeofday(&tv, NULL);
          char str_time[12];
          sprintf(str_time, "%ld", tv.tv_sec);
-         strcat(meeting_file_name,argv[7]);
+         strcat(meeting_file_name,"/tmp/meeting_");
          strcat(meeting_file_name,str_time);
          strcat(meeting_file_name,".raw");
          meeting_file = fopen(meeting_file_name,"a+b"); // Open the binary file
