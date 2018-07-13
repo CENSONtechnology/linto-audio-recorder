@@ -67,7 +67,13 @@ int main(int argc, char** argv) {
     printf("Failed to open %s !\n",argv[1]);
     return 1;
   }
-  meeting_file = fopen(argv[7],"a+b"); // Open the binary file
+  char* meeting_file_name = malloc(sizeof(char)*255);
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  char str_time[12];
+  sprintf(str_time, "%ld", tv.tv_sec);
+  strcat(meeting_file_name,str_time);
+  meeting_file = fopen(meeting_file_name,"a+b"); // Open the binary file
   if (meeting_file == NULL) {
     printf("Failed to open %s !\n",argv[7]);
     return 1;
