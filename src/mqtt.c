@@ -104,17 +104,13 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
          event_meeting = Stop_meeting;
          printf("End of meeting\n");
        }
-     }
-     else if (strcmp("ui/mute_on",topicName)==0) {
-       if (event_meeting == Meeting) {
+       else if (strncmp("pause_meeting",value,12)==0) {
          event_meeting = Pause_meeting;
-         printf("LinTO mute during meeting\n");
+         printf("Meeting paused\n");
        }
-     }
-     else if (strcmp("ui/mute_off",topicName)==0) {
-       if (event_meeting == Pause_meeting) {
+       else if (strncmp("resume_meeting",value,12)==0) {
          event_meeting = Meeting;
-         printf("LinTO restart meeting\n");
+         printf("Meeting resumed\n");
        }
      }
      value[0]='\0';
