@@ -77,7 +77,7 @@ int main(int argc, char** argv) {
   strcat(meeting_file_name,".raw");
   meeting_file = fopen(meeting_file_name,"a+b"); // Open the binary file
   if (meeting_file == NULL) {
-    printf("Failed to open %s !\n",argv[7]);
+    printf("Failed to open %s !\n",meeting_file_name);
     return 1;
   }
   if(pthread_create(&recorder, NULL, &record, (void*) NULL) == -1) { // Create the thread to record data
