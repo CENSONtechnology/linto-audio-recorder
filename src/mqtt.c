@@ -83,10 +83,6 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
        MQTTClient_free(topicName);
        return 1;
      }
-     while (!(json_token_streq(data, &tokens[i], "value"))) {
-       i++;
-     }
-     strncpy(value,data+tokens[i+1].start,tokens[i+1].end-tokens[i+1].start);
      if (strcmp("wuw/wuw-spotted",topicName)==0) {
        pthread_cond_signal(&wuw_cond);
        event_command = Wakeword;
@@ -96,7 +92,7 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
        event_command = VAD_end;
      }
      else if (strcmp("lintoclient/action",topicName)==0)  {
-       while (!(json_token_streq(data, &tokens[i], "value"))) {
+       while (!(json_token_streq(data, &tokens[i], "value")) && i<4) {
          i++;
        }
        strncpy(value,data+tokens[i+1].start,tokens[i+1].end-tokens[i+1].start);
@@ -107,6 +103,18 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
        else if (strncmp("stop_meeting",value,12)==0) {
          event_meeting = Stop_meeting;
          printf("End of meeting\n");
+       }
+     }
+     else if (strcmp("ui/mute_on",topicName)==0) {
+       if (event_meeting == Meeting) {
+         event_meeting = Pause_meeting;
+         printf("LinTO mute during meeting\n");
+       }
+     }
+     else if (strcmp("ui/mute_off",topicName)==0) {
+       if (event_meeting == Pause_meeting) {
+         event_meeting = Meeting;
+         printf("LinTO restart meeting\n");
        }
      }
      value[0]='\0';
@@ -151,6 +159,8 @@ int subscribe(MQTTClient* client) {
    MQTTClient_subscribe(*client,"wuw/wuw-spotted", QOS);
    MQTTClient_subscribe(*client,"utterance/stop", QOS);
    MQTTClient_subscribe(*client,"lintoclient/action", QOS);
+   MQTTClient_subscribe(*client,"ui/mute_on", QOS);
+   MQTTClient_subscribe(*client,"ui/mute_off", QOS);
    mqtt_client = client;
    free(ADDRESS);
    return rc;

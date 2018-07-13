@@ -34,6 +34,6 @@
 #define RATE 16000
 #define PI 3.1415926
 
-enum event {Wakeword, VAD_end, Meeting ,Stop_meeting ,None};
+enum event {Wakeword, VAD_end, Meeting ,Stop_meeting, Pause_meeting ,None};
 
 uint32_t add(uint32_t index, int16_t* data,int32_t size);
