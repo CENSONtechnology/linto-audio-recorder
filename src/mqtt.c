@@ -155,8 +155,6 @@ int subscribe(MQTTClient* client) {
    MQTTClient_subscribe(*client,"wuw/wuw-spotted", QOS);
    MQTTClient_subscribe(*client,"utterance/stop", QOS);
    MQTTClient_subscribe(*client,"lintoclient/action", QOS);
-   MQTTClient_subscribe(*client,"ui/mute_on", QOS);
-   MQTTClient_subscribe(*client,"ui/mute_off", QOS);
    mqtt_client = client;
    free(ADDRESS);
    return rc;
