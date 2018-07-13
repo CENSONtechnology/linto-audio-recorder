@@ -20,6 +20,7 @@ extern enum event event_meeting;
 extern pthread_mutex_t wuw_mutex;
 extern pthread_cond_t wuw_cond;
 extern pthread_cond_t vad_end_cond;
+extern FILE* meeting_file;
 MQTTClient* mqtt_client;
 char* ip;
 char* port;
@@ -97,12 +98,27 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
        }
        strncpy(value,data+tokens[i+1].start,tokens[i+1].end-tokens[i+1].start);
        if (strncmp("start_meeting",value,13)==0) {
-         event_meeting = Meeting;
          printf("Switching to meeting mode\n");
+         char* meeting_file_name = malloc(sizeof(char)*255);
+         memset(meeting_file_name,'\0',255);
+         struct timeval tv;
+         gettimeofday(&tv, NULL);
+         char str_time[12];
+         sprintf(str_time, "%ld", tv.tv_sec);
+         strcat(meeting_file_name,argv[7]);
+         strcat(meeting_file_name,str_time);
+         strcat(meeting_file_name,".raw");
+         meeting_file = fopen(meeting_file_name,"a+b"); // Open the binary file
+         if (meeting_file == NULL) {
+           printf("Failed to open %s !\n",meeting_file_name);
+           return 1;
+         }
+         event_meeting = Meeting;
        }
        else if (strncmp("stop_meeting",value,12)==0) {
          event_meeting = Stop_meeting;
          printf("End of meeting\n");
+         fclose(meeting_file);
        }
        else if (strncmp("pause_meeting",value,12)==0) {
          event_meeting = Pause_meeting;

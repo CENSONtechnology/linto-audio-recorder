@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
     printf("Failed to open %s !\n",argv[1]);
     return 1;
   }
-  char* meeting_file_name = malloc(sizeof(char)*255);
+  /*char* meeting_file_name = malloc(sizeof(char)*255);
   memset(meeting_file_name,'\0',255);
   struct timeval tv;
   gettimeofday(&tv, NULL);
@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
   if (meeting_file == NULL) {
     printf("Failed to open %s !\n",meeting_file_name);
     return 1;
-  }
+  }*/
   if(pthread_create(&recorder, NULL, &record, (void*) NULL) == -1) { // Create the thread to record data
     printf("Thread error\n");
     return 1;
