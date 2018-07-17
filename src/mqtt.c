@@ -21,6 +21,7 @@ extern pthread_mutex_t wuw_mutex;
 extern pthread_cond_t wuw_cond;
 extern pthread_cond_t vad_end_cond;
 extern FILE* meeting_file;
+extern char* meeting_file_name;
 MQTTClient* mqtt_client;
 char* ip;
 char* port;
@@ -99,15 +100,15 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
        strncpy(value,data+tokens[i+1].start,tokens[i+1].end-tokens[i+1].start);
        if (strncmp("start_meeting",value,13)==0) {
          printf("Switching to meeting mode\n");
-         char* meeting_file_name = malloc(sizeof(char)*255);
-         memset(meeting_file_name,'\0',255);
+         char* file_name = malloc(sizeof(char)*255);
+         memset(file_name,'\0',255);
          struct timeval tv;
          gettimeofday(&tv, NULL);
          char str_time[12];
          sprintf(str_time, "%ld", tv.tv_sec);
-         strcat(meeting_file_name,"/tmp/meeting_");
-         strcat(meeting_file_name,str_time);
-         strcat(meeting_file_name,".raw");
+         strcat(file_name,meeting_file_name);
+         strcat(file_name,str_time);
+         strcat(file_name,".raw");
          meeting_file = fopen(meeting_file_name,"a+b"); // Open the binary file
          if (meeting_file == NULL) {
            printf("Failed to open %s !\n",meeting_file_name);

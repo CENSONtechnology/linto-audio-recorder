@@ -26,6 +26,7 @@ extern pthread_cond_t wuw_cond; //condition to unlock record
 extern pthread_cond_t vad_end_cond; //condition to lock record
 FILE *f; //file or pipe to save data
 FILE *meeting_file;
+char* meeting_file_name;
 char* channels; //number of channels
 char* rate; //sampling rate
 extern char* ip; //local broker ip
@@ -67,20 +68,7 @@ int main(int argc, char** argv) {
     printf("Failed to open %s !\n",argv[1]);
     return 1;
   }
-  /*char* meeting_file_name = malloc(sizeof(char)*255);
-  memset(meeting_file_name,'\0',255);
-  struct timeval tv;
-  gettimeofday(&tv, NULL);
-  char str_time[12];
-  sprintf(str_time, "%ld", tv.tv_sec);
-  strcat(meeting_file_name,argv[7]);
-  strcat(meeting_file_name,str_time);
-  strcat(meeting_file_name,".raw");
-  meeting_file = fopen(meeting_file_name,"a+b"); // Open the binary file
-  if (meeting_file == NULL) {
-    printf("Failed to open %s !\n",meeting_file_name);
-    return 1;
-  }*/
+  meeting_file_name = argv[7];
   if(pthread_create(&recorder, NULL, &record, (void*) NULL) == -1) { // Create the thread to record data
     printf("Thread error\n");
     return 1;
