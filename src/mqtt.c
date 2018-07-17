@@ -109,7 +109,7 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
          strcat(file_name,meeting_file_name);
          strcat(file_name,str_time);
          strcat(file_name,".raw");
-         meeting_file = fopen(meeting_file_name,"a+b"); // Open the binary file
+         meeting_file = fopen(file_name,"a+b"); // Open the binary file
          if (meeting_file == NULL) {
            printf("Failed to open %s !\n",meeting_file_name);
            return 1;
