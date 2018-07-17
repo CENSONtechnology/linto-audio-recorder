@@ -21,9 +21,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <pulse/pulseaudio.h>
-#include <pulse/simple.h>
-#include <pulse/error.h>
 #include <math.h>
 #include <pthread.h>
 #include <signal.h>

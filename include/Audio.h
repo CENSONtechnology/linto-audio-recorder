@@ -16,6 +16,9 @@
  */
 
 #include "Circular.h"
+#include <pulse/pulseaudio.h>
+#include <pulse/simple.h>
+#include <pulse/error.h>
 
 int audio_init(pa_simple **s, char* type, char* format, char* rate, char* channels);
 int audio_input(pa_simple *s, int size, int16_t* buff);
