@@ -39,4 +39,4 @@ To start the program, just run the Python script using
 ./audio_recorder.py --mode X
 ```
 
-X is <file> or <pipe>.
+X is file or pipe.
