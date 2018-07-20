@@ -29,4 +29,14 @@ To list the available input options, use
 pacmd list-sources
 ```
 
-The Audio Recorder program reads the sound from the default input device, then stores it in a circular buffer. When, a specific message is received on the MQTT bus, the full data are send to a named pipe or a file.
+Configuration data are available in the config.conf file.
+To start the program, just run the Python script using
+```
+/usr/bin/python3 audio_recorder.py --mode X
+```
+
+```
+./audio_recorder.py --mode X
+```
+
+X is <file> or <pipe>.
